@@ -16,17 +16,6 @@ from email.mime.image import MIMEImage
 # 1. TOML 파일 읽기
 config = toml.load(".streamlit/secrets.toml")
 
-# @st.cache_resource
-# def redis_resource():
-#     redis_client = redis.Redis(
-#         host='redis-14168.c340.ap-northeast-2-1.ec2.redns.redis-cloud.com',# Redis 서버 주소
-#         port=14168,            # Redis 포트
-#         username='default',  # 사용자 이름
-#         password=config['redis_passwd'],  # 비밀번호 설정
-#         db=0                  # 기본 DB
-#     )
-#     return redis_client
-
 def resume():
 # 타이틀
     st.title("SKNs 근로계약서 작성")
