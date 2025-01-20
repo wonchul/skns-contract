@@ -1,12 +1,8 @@
 import streamlit as st
 import toml
-import gspread
-from google.oauth2.service_account import Credentials
 import streamlit as st
-import pandas as pd
 import datetime
 import redis 
-import json
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageDraw, ImageFont
@@ -106,7 +102,7 @@ def resume():
                 
                 # 폰트 로딩
                 try:
-                    font = ImageFont.truetype("/Library/Fonts/AppleGothic.ttf", size=20)
+                    font = ImageFont.truetype("./fonts/NanumGothic-Regular.ttf", size=20)
                 except IOError:
                     font = ImageFont.load_default()  # 폰트 파일을 찾을 수 없으면 기본 폰트 사용
 
@@ -176,9 +172,6 @@ def resume():
         # st.info("캔버스에서 서명을 작성하고, 이름을 입력한 후 저장 버튼을 눌러주세요.")
         pass
 
-
-# 2. 항목 접근
-server_config = config["redis_passwd"]
 def main():
     resume()
 
