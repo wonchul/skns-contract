@@ -19,13 +19,17 @@ from email.mime.image import MIMEImage
 # 1. TOML 파일 읽기
 config = toml.load(".streamlit/secrets.toml")
 
-redis_client = redis.Redis(
-    host='redis-14168.c340.ap-northeast-2-1.ec2.redns.redis-cloud.com',# Redis 서버 주소
-    port=14168,            # Redis 포트
-    username='default',  # 사용자 이름
-    password=config['redis_passwd'],  # 비밀번호 설정
-    db=0                  # 기본 DB
-)
+# @st.cache_resource
+# def redis_resource():
+#     redis_client = redis.Redis(
+#         host='redis-14168.c340.ap-northeast-2-1.ec2.redns.redis-cloud.com',# Redis 서버 주소
+#         port=14168,            # Redis 포트
+#         username='default',  # 사용자 이름
+#         password=config['redis_passwd'],  # 비밀번호 설정
+#         db=0                  # 기본 DB
+#     )
+#     return redis_client
+
 
 def mail():
     st.write('mail 보내기')
@@ -52,28 +56,33 @@ def resume():
     # 배경 이미지 크기
     canvas_width, canvas_height = background_image.size
 
-    # **배경 이미지 미리 보기**
-    st.write("**근로계약서 미리 보기:**")
-    st.image(background_image, caption="배경 이미지", use_column_width=True)
 
-    # 이름 입력
-    # st.write("**이름을 입력하세요:**")
-    name_input = st.text_input("이름 입력", placeholder="여기에 이름을 입력하세요")
+    with st.form(key="my_form_1"):
 
-    # 서명 드로우 캔버스 설정
-    st.write("**서명을 작성해주세요.**")
-    signature_canvas = st_canvas(
-        background_color="#ffffff",            # 서명 캔버스 배경 색상
-        width=400,                             # 서명 캔버스 너비
-        height=150,                            # 서명 캔버스 높이
-        drawing_mode="freedraw",               # 자유 그리기 모드
-        stroke_width=3,                        # 서명 선 두께
-        stroke_color="#000000",                # 서명 선 색상 (기본 검정)
-        key="signature_canvas"                 # 고유 키
-    )
+        # **배경 이미지 미리 보기**
+        st.write("**근로계약서 미리 보기:**")
+        st.image(background_image, caption="배경 이미지", use_column_width=True)
+
+        # 이름 입력
+        # st.write("**이름을 입력하세요:**")
+        name_input = st.text_input("이름 입력", placeholder="여기에 이름을 입력하세요")
+
+        # 서명 드로우 캔버스 설정
+        st.write("**서명을 작성해주세요.**")
+        signature_canvas = st_canvas(
+            background_color="#ffffff",            # 서명 캔버스 배경 색상
+            width=400,                             # 서명 캔버스 너비
+            height=150,                            # 서명 캔버스 높이
+            drawing_mode="freedraw",               # 자유 그리기 모드
+            stroke_width=3,                        # 서명 선 두께
+            stroke_color="#000000",                # 서명 선 색상 (기본 검정)
+            key="signature_canvas"                 # 고유 키
+        )
+        submit =  st.form_submit_button('작성완료')
+
 
     # 서명 캔버스와 배경 이미지 합성
-    if st.button("작성완료"):
+    if submit:
         if signature_canvas.image_data is not None:
             # 서명 데이터를 PIL 이미지로 변환
             signature_image = Image.fromarray((signature_canvas.image_data).astype("uint8")).convert("RGBA")
