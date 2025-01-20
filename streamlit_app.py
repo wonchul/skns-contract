@@ -27,21 +27,6 @@ config = toml.load(".streamlit/secrets.toml")
 #     )
 #     return redis_client
 
-
-def mail():
-    st.write('mail 보내기')
-    sender_email = "wonchul.no@gmail.com"
-    receiver_email = ["ninja0516@naver.com"]
-
-    # 이메일 생성
-    message = MIMEMultipart()
-    message["From"] = sender_email
-    message["To"] = ", ".join(receiver_email)
-    message["Subject"] = f"메일 보내기"
-    body = """
-    안녕
-    """
-
 def resume():
 # 타이틀
     st.title("SKNs 근로계약서 작성")
