@@ -1,9 +1,6 @@
 import streamlit as st
 import toml
-import streamlit as st
 import datetime
-import redis 
-import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageDraw, ImageFont
 import io
