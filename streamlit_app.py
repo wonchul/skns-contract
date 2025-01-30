@@ -43,15 +43,15 @@ def resume():
         bg_image_name_1 = 'contract1-1.png'
         bg_image_name_2 = 'contract1-2.png'
 
-        name_position = (350, 2030)
-        name_position_2 = (1200, 410)
-        signature_position = (470, 2000)
-        year_position = (720, 1275)
-        month_position = (900, 1275)
-        day_position = (1030, 1275)
-        addr_position = (350, 1900)
-        jumin_position = (350, 1950)
-        contact_position = (350, 1990)
+        name_position = (350, 1172) # 2030 - 854
+        name_position_2 = (940, 364)
+        signature_position = (470, 1146) # 2000 - 854
+        year_position = (750, 425) # 1275
+        month_position = (880, 425)
+        day_position = (990, 425)
+        addr_position = (350, 1048) # 1900 - 854
+        jumin_position = (350, 1091) # 1950 - 854
+        contact_position = (350, 1131) # 1990 - 854
 
     else:
         st.stop()
@@ -71,13 +71,13 @@ def resume():
 
         # 이름 입력
         # st.write("**이름을 입력하세요:**")
-        addr_input = st.text_input("주소 입력", placeholder="여기에 주소을 입력하세요")
+        addr_input = st.text_input("주소 입력", placeholder="주소을 입력하세요")
 
-        jumin_input = st.text_input("주민번호 입력", placeholder="여기에 주민번호를 입력하세요 (987654-1111111)")
+        jumin_input = st.text_input("주민번호 입력", placeholder="주민번호를 입력하세요 (987654-1111111)")
 
-        contact_input = st.text_input("연락처 입력", placeholder="여기에 연락처를 입력하세요 (010-9999-9999)")
+        contact_input = st.text_input("연락처 입력", placeholder="연락처를 입력하세요 (010-9999-9999)")
 
-        name_input = st.text_input("이름 입력", placeholder="여기에 이름을 입력하세요")
+        name_input = st.text_input("이름 입력", placeholder="이름을 입력하세요")
 
         # 서명 드로우 캔버스 설정
         st.write("**서명을 작성해주세요.**")
@@ -129,7 +129,7 @@ def resume():
                                 # text_position = (x_position_name, y_position_name)  # 이름 위치 (조정)
                                 # 폰트 로딩
                                 try:
-                                    font = ImageFont.truetype("./fonts/NanumGothic-Regular.ttf", size=30)
+                                    font = ImageFont.truetype("./fonts/NanumGothic-Regular.ttf", size=25)
                                 except IOError:
                                     font = ImageFont.load_default()  # 폰트 파일을 찾을 수 없으면 기본 폰트 사용
 
@@ -167,8 +167,8 @@ def resume():
 
                                 zip_buffer.seek(0)                                
                                 
-                                sender_email = "wonchul.no@gmail.com"
-                                receiver_email = "skannes@naver.com"
+                                sender_email = config['sender']
+                                receiver_email = config['receiver']
                                 subject = f"[{today}] {name_input} {contract_name}"
                                 body = f"[{today}] {name_input} {contract_name}"
 
@@ -240,7 +240,7 @@ def resume():
                                 st.download_button(
                                     label=f"{contract_name} 다운로드",
                                     data=zip_buffer,
-                                    file_name="signed_images.zip",
+                                    file_name=f"skns_contract_signed_{today}.zip",
                                     mime="application/zip",
                                 )                                
                         else:
