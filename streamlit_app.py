@@ -34,30 +34,34 @@ def resume():
     
     if config["day_worker"]:  # 일용직 계약서
         bg_image_name = 'contract1.png'
-        name_position = (1020, 2088) # 2030 - 854
-        name_position_2 = (965, 320)
-
-        signature_position = (1170, 2078) # 2000 - 854
-        year_position = (750, 1796) # 1275
-        month_position = (880, 1796)
-        day_position = (990, 1796)
-        addr_position = (1020, 1961) # 1900 - 854
-        jumin_position = (1020, 2003) # 1950 - 854
-        contact_position = (1020, 2043) # 1990 - 854
+        name_position_2 = (1450, 610) # 상단 이름
+        # 하단 정보
+        name_position = (1540, 3010) # 2030 - 854
+        signature_position = (1800, 2980) # 2000 - 854
+        addr_position = (1540, 2820) # 1900 - 854
+        jumin_position = (1540, 2885) # 1950 - 854
+        contact_position = (1540, 2946) # 1990 - 854
+        # 서명 날짜
+        year_position = (1120, 2510) # 1275
+        month_position = (1310, 2510)
+        day_position = (1470, 2510)
 
     else: # 중단기 계약서
         bg_image_name = 'contract2.png'
-
-        name_position = (1020, 2070) # 2030 - 854
-        name_position_2 = (965, 320)
-        signature_position = (1170, 2060) # 2000 - 854
-        year_position = (750, 1778) # 1275
-        month_position = (880, 1778)
-        day_position = (990, 1778)
-        addr_position = (1020, 1943) # 1900 - 854
-        jumin_position = (1020, 1985) # 1950 - 854
-        contact_position = (1020, 2025) # 1990 - 854
-        date_position = (440, 490) # 2030 - 854
+        name_position_2 = (1450, 610) # 상단 이름
+        date_position = (643, 918)
+        # 하단 정보
+        name_position = (1540, 3010) # 2030 - 854
+        signature_position = (1800, 2980) # 2000 - 854
+        addr_position = (1540, 2820) # 1900 - 854
+        jumin_position = (1540, 2885) # 1950 - 854
+        contact_position = (1540, 2946) # 1990 - 854
+        
+        year_position = (1120, 2510) # 1275
+        month_position = (1310, 2510)
+        day_position = (1470, 2510)
+        
+        
 
     # 배경 이미지 로드
     background_image = Image.open(bg_image_name).convert("RGBA")
@@ -86,12 +90,14 @@ def resume():
         signature_canvas = st_canvas(
             background_color="#ffffff",            # 서명 캔버스 배경 색상
             width=400,                             # 서명 캔버스 너비
-            height=150,                            # 서명 캔버스 높이
+            height=200,                            # 서명 캔버스 높이
             drawing_mode="freedraw",               # 자유 그리기 모드
-            stroke_width=3,                        # 서명 선 두께
+            stroke_width=8,                        # 서명 선 두께
             stroke_color="#000000",                # 서명 선 색상 (기본 검정)
             key="signature_canvas"                 # 고유 키
         )
+        # on = st.checkbox("자동입력 기능 활성화",value=True)
+        
         submit =  st.form_submit_button('작성완료')
 
     # print('+',name_input,'+',signature_canvas.image_data,'+')
@@ -119,7 +125,7 @@ def resume():
                                 signature_image.putdata(new_data)
 
                                 # 서명 이미지를 배경 이미지에 합성 (크기를 조정하여 삽입)
-                                resized_signature = signature_image.resize((200, 75))  # 서명 이미지를 200x75로 축소
+                                resized_signature = signature_image.resize((250, 100))  # 서명 이미지를 200x75로 축소
                                 combined_image = background_image.copy()
                                 combined_image.paste(resized_signature, signature_position, resized_signature)
 
@@ -130,7 +136,7 @@ def resume():
                                 # text_position = (x_position_name, y_position_name)  # 이름 위치 (조정)
                                 # 폰트 로딩
                                 try:
-                                    font = ImageFont.truetype("./fonts/NanumGothic-Regular.ttf", size=26)
+                                    font = ImageFont.truetype("./fonts/NanumGothic-Regular.ttf", size=40)
                                 except IOError:
                                     font = ImageFont.load_default()  # 폰트 파일을 찾을 수 없으면 기본 폰트 사용
 
