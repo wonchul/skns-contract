@@ -85,136 +85,130 @@ def resume():
     # print('+',name_input,'+',signature_canvas.image_data,'+')
     # 서명 캔버스와 배경 이미지 합성
     if submit:
-        if jumin_input:
-            if contact_input:
-                if name_input:
-                    if signature_canvas.image_data is not None:
-                        if np.all(signature_canvas.image_data[:, :, :3] == 255):
-                            st.error("서명을 작성하고 작성완료 버튼을 눌러주세요.")
-                        else:
-                            # 서명 데이터를 PIL 이미지로 변환
-                            signature_image = Image.fromarray((signature_canvas.image_data).astype("uint8")).convert("RGBA")
-                            
-                            # 서명 배경을 투명하게 설정
-                            datas = signature_image.getdata()
-                            new_data = []
-                            for item in datas:
-                                if item[0:3] == (255, 255, 255):  # 흰색 배경 투명화
-                                    new_data.append((255, 255, 255, 0))
-                                else:
-                                    new_data.append(item)
-                            signature_image.putdata(new_data)
-
-                            # 서명 이미지를 배경 이미지에 합성 (크기를 조정하여 삽입)
-                            resized_signature = signature_image.resize((250, 100))  # 서명 이미지를 200x75로 축소
-                            combined_image = background_image.copy()
-                            combined_image.paste(resized_signature, signature_position, resized_signature)
-
-                            # 이름 텍스트를 이미지로 변환하여 추가
-                            # if name_input:
-                            draw = ImageDraw.Draw(combined_image)
-
-                            # text_position = (x_position_name, y_position_name)  # 이름 위치 (조정)
-                            # 폰트 로딩
-                            try:
-                                font = ImageFont.truetype("./fonts/NanumGothic-Regular.ttf", size=20)
-                            except IOError:
-                                font = ImageFont.load_default()  # 폰트 파일을 찾을 수 없으면 기본 폰트 사용
-
-                            # 이름 텍스트를 이미지로 추가
-                            draw.text(jumin_position, jumin_input, fill="black", font=font)
-                            draw.text(contact_position, contact_input, fill="black", font=font)
-
-                            draw.text(name_position, name_input, fill="black", font=font)
-
-
-                            # 날짜 텍스트를 이미지로 추가
-                            draw.text(contract_today, f"계약일자 :   {year} 년   {month} 월   {day} 일", fill="black", font=font)
-                            # draw.text(year_position, f"{year}", fill="black", font=font)
-                            # draw.text(month_position, f"{month}", fill="black", font=font)
-                            # draw.text(day_position, f"{day}", fill="black", font=font)
-
-                            draw.text(name_position_2, name_input, fill="black", font=font)
-                            #if config["day_worker"] is False: draw.text(date_position, config['date_range'], fill="black", font=font)
-
-
-                            # # 이미지를 저장할 수 있는 버퍼 생성
-                            # buffer = io.BytesIO()
-                            # combined_image.save(buffer, format="PNG")
-                            # buffer.seek(0)
-                            # st.success("이미지가 성공적으로 저장되었습니다.")
-                            buffer = io.BytesIO()
-                            # Save the images to the buffers
-                            combined_image.save(buffer, format="PNG")
-
-                            buffer.seek(0)
-                            
-                            sender_email = config['sender']
-                            receiver_email = config['receiver']
-                            subject = f"[{today}] {name_input} {contract_name}"
-                            body = f"[{today}] {name_input} {contract_name}"
-
-                            msg = MIMEMultipart()
-                            msg['From'] = sender_email
-                            msg['To'] = receiver_email
-                            msg['Subject'] = subject
-
-                            msg_alternative = MIMEMultipart('alternative')
-                            msg.attach(msg_alternative)
-
-                            msg_text = MIMEText(body, 'plain')
-                            msg_alternative.attach(msg_text)
-
-                            # HTML body with images
-                            msg_html = MIMEText(f'''
-                            <html>
-                            <body>
-                                <p>{body}</p>
-                                <img src="cid:image1" width="800" height="1080">
-                            </body>
-                            </html>
-                            ''', 'html')
-                            msg_alternative.attach(msg_html)
-
-                            # Attach first image
-                            msg_image = MIMEImage(buffer.getvalue(), _subtype="png")
-                            msg_image.add_header('Content-ID', '<image1>')
-                            msg.attach(msg_image)
-
-                            # Attach images as files
-                            part = MIMEBase('application', 'octet-stream')
-                            part.set_payload(buffer.getvalue())
-                            encoders.encode_base64(part)
-                            part.add_header('Content-Disposition', "attachment; filename= signed_with_name.png")
-                            msg.attach(part)
-
-
-                            with st.spinner(f'{contract_name} 생성중 조금만 기다려주세요...'):
-                                try:
-                                    server = smtplib.SMTP('smtp.gmail.com', 587)
-                                    server.starttls()
-                                    server.login(sender_email, config["email_passwd"])
-                                    text = msg.as_string()
-                                    server.sendmail(sender_email, receiver_email, text)
-                                    server.quit()
-                                    st.success(f"{contract_name} 작성이 완료되었습니다. 계약서를 저장 하시려면 아래의 다운로드 버튼을 눌러주세요")
-                                except Exception as e:
-                                    st.error(f"작성 실패했습니다 담당자에게 문의해주세요.")
-
-                            st.download_button(
-                                label=f"{contract_name} 다운로드",
-                                data=buffer,
-                                file_name=f"skns_contract_signed_{today}.png",
-                                mime="image/png",
-                            )                                
-                    else:
-                        st.error("서명을 작성하고 작성완료 버튼을 눌러주세요.")
-                else:
-                    st.error("이름을 작성하고 작성완료 버튼을 눌러주세요.")
-            else:
-                st.error("연락처를 작성완료 버튼을 눌러주세요.")
+        if not jumin_input:
+            st.error("생년월일을 입력하고 작성완료 버튼을 눌러주세요.")
+        elif not contact_input:
+            st.error("연락처를 입력하고 작성완료 버튼을 눌러주세요.")
+        elif not name_input:
+            st.error("이름을 입력하고 작성완료 버튼을 눌러주세요.")
+        elif signature_canvas.image_data is None or np.all(signature_canvas.image_data[:, :, :3] == 255):
+            st.error("서명을 작성하고 작성완료 버튼을 눌러주세요.")
         else:
-            st.error("생년월일 작성완료 버튼을 눌러주세요.")
+            # 서명 데이터를 PIL 이미지로 변환
+            signature_image = Image.fromarray((signature_canvas.image_data).astype("uint8")).convert("RGBA")
+            
+            # 서명 배경을 투명하게 설정
+            datas = signature_image.getdata()
+            new_data = []
+            for item in datas:
+                if item[0:3] == (255, 255, 255):  # 흰색 배경 투명화
+                    new_data.append((255, 255, 255, 0))
+                else:
+                    new_data.append(item)
+            signature_image.putdata(new_data)
+
+            # 서명 이미지를 배경 이미지에 합성 (크기를 조정하여 삽입)
+            resized_signature = signature_image.resize((250, 100))  # 서명 이미지를 200x75로 축소
+            combined_image = background_image.copy()
+            combined_image.paste(resized_signature, signature_position, resized_signature)
+
+            # 이름 텍스트를 이미지로 변환하여 추가
+            # if name_input:
+            draw = ImageDraw.Draw(combined_image)
+
+            # text_position = (x_position_name, y_position_name)  # 이름 위치 (조정)
+            # 폰트 로딩
+            try:
+                font = ImageFont.truetype("./fonts/NanumGothic-Regular.ttf", size=20)
+            except IOError:
+                font = ImageFont.load_default()  # 폰트 파일을 찾을 수 없으면 기본 폰트 사용
+
+            # 이름 텍스트를 이미지로 추가
+            draw.text(jumin_position, jumin_input, fill="black", font=font)
+            draw.text(contact_position, contact_input, fill="black", font=font)
+
+            draw.text(name_position, name_input, fill="black", font=font)
+
+
+            # 날짜 텍스트를 이미지로 추가
+            draw.text(contract_today, f"계약일자 :   {year} 년   {month} 월   {day} 일", fill="black", font=font)
+            # draw.text(year_position, f"{year}", fill="black", font=font)
+            # draw.text(month_position, f"{month}", fill="black", font=font)
+            # draw.text(day_position, f"{day}", fill="black", font=font)
+
+            draw.text(name_position_2, name_input, fill="black", font=font)
+            #if config["day_worker"] is False: draw.text(date_position, config['date_range'], fill="black", font=font)
+
+
+            # # 이미지를 저장할 수 있는 버퍼 생성
+            # buffer = io.BytesIO()
+            # combined_image.save(buffer, format="PNG")
+            # buffer.seek(0)
+            # st.success("이미지가 성공적으로 저장되었습니다.")
+            buffer = io.BytesIO()
+            # Save the images to the buffers
+            combined_image.save(buffer, format="PNG")
+
+            buffer.seek(0)
+            
+            sender_email = config['sender']
+            receiver_email = config['receiver']
+            subject = f"[{today}] {name_input} {contract_name}"
+            body = f"[{today}] {name_input} {contract_name}"
+
+            msg = MIMEMultipart()
+            msg['From'] = sender_email
+            msg['To'] = receiver_email
+            msg['Subject'] = subject
+
+            msg_alternative = MIMEMultipart('alternative')
+            msg.attach(msg_alternative)
+
+            msg_text = MIMEText(body, 'plain')
+            msg_alternative.attach(msg_text)
+
+            # HTML body with images
+            msg_html = MIMEText(f'''
+            <html>
+            <body>
+                <p>{body}</p>
+                <img src="cid:image1" width="800" height="1080">
+            </body>
+            </html>
+            ''', 'html')
+            msg_alternative.attach(msg_html)
+
+            # Attach first image
+            msg_image = MIMEImage(buffer.getvalue(), _subtype="png")
+            msg_image.add_header('Content-ID', '<image1>')
+            msg.attach(msg_image)
+
+            # Attach images as files
+            part = MIMEBase('application', 'octet-stream')
+            part.set_payload(buffer.getvalue())
+            encoders.encode_base64(part)
+            part.add_header('Content-Disposition', "attachment; filename= signed_with_name.png")
+            msg.attach(part)
+
+
+            with st.spinner(f'{contract_name} 생성중 조금만 기다려주세요...'):
+                try:
+                    server = smtplib.SMTP('smtp.gmail.com', 587)
+                    server.starttls()
+                    server.login(sender_email, config["email_passwd"])
+                    text = msg.as_string()
+                    server.sendmail(sender_email, receiver_email, text)
+                    server.quit()
+                    st.success(f"{contract_name} 작성이 완료되었습니다. 계약서를 저장 하시려면 아래의 다운로드 버튼을 눌러주세요")
+                except Exception as e:
+                    st.error(f"작성 실패했습니다 담당자에게 문의해주세요.")
+
+            st.download_button(
+                label=f"{contract_name} 다운로드",
+                data=buffer,
+                file_name=f"skns_contract_signed_{today}.png",
+                mime="image/png",
+            )
     else:
         # st.error("서류를 작성완료 버튼을 눌러주세요.")
         pass
